@@ -100,6 +100,31 @@ export default function HomeScreen({ navigation }) {
 
           <View style={styles.divider} />
 
+          {/* XP 진행 바 */}
+          {levelInfo && (
+            <View style={styles.xpSection}>
+              <View style={styles.xpRow}>
+                <Text style={styles.xpLabel}>
+                  {levelInfo.current.emoji} {levelInfo.current.title}
+                </Text>
+                <Text style={styles.xpValue}>
+                  {levelInfo.xp} XP
+                  {levelInfo.next ? ` / ${levelInfo.next.minXp} XP` : ' (MAX)'}
+                </Text>
+              </View>
+              <View style={styles.xpBarBg}>
+                <View style={[styles.xpBarFill, { width: `${Math.round(levelInfo.progress * 100)}%` }]} />
+              </View>
+              {levelInfo.next && (
+                <Text style={styles.xpNextLabel}>
+                  다음 레벨까지 {levelInfo.next.minXp - levelInfo.xp} XP
+                </Text>
+              )}
+            </View>
+          )}
+
+          <View style={styles.divider} />
+
           {todayDone && lastScore ? (
             <View style={styles.doneSection}>
               <Text style={styles.doneEmoji}>✅</Text>
@@ -270,6 +295,41 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#2D2D44',
     marginBottom: 16,
+  },
+  xpSection: {
+    marginBottom: 16,
+  },
+  xpRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  xpLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#D1D5DB',
+  },
+  xpValue: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  xpBarBg: {
+    height: 6,
+    backgroundColor: '#2D2D44',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
+  xpBarFill: {
+    height: 6,
+    backgroundColor: '#3B82F6',
+    borderRadius: 3,
+  },
+  xpNextLabel: {
+    fontSize: 11,
+    color: '#6B7280',
+    textAlign: 'right',
   },
   doneSection: {
     alignItems: 'center',
