@@ -1,16 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  FlatList,
-  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const { width } = Dimensions.get('window');
 
 const SLIDES = [
   {
@@ -35,11 +31,10 @@ const SLIDES = [
 
 export default function OnboardingScreen({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef(null);
+  const slide = SLIDES[currentIndex];
 
   const handleNext = () => {
     if (currentIndex < SLIDES.length - 1) {
-      flatListRef.current.scrollToIndex({ index: currentIndex + 1 });
       setCurrentIndex(currentIndex + 1);
     } else {
       finish();
@@ -59,22 +54,11 @@ export default function OnboardingScreen({ navigation }) {
       </TouchableOpacity>
 
       {/* 슬라이드 */}
-      <FlatList
-        ref={flatListRef}
-        data={SLIDES}
-        horizontal
-        pagingEnabled
-        scrollEnabled={false}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.slide}>
-            <Text style={styles.slideEmoji}>{item.emoji}</Text>
-            <Text style={styles.slideTitle}>{item.title}</Text>
-            <Text style={styles.slideSub}>{item.sub}</Text>
-          </View>
-        )}
-      />
+      <View style={styles.slide}>
+        <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+        <Text style={styles.slideTitle}>{slide.title}</Text>
+        <Text style={styles.slideSub}>{slide.sub}</Text>
+      </View>
 
       {/* 인디케이터 */}
       <View style={styles.dots}>
@@ -89,7 +73,6 @@ export default function OnboardingScreen({ navigation }) {
           {currentIndex === SLIDES.length - 1 ? '🚀  시작하기' : '다음'}
         </Text>
       </TouchableOpacity>
-
     </SafeAreaView>
   );
 }
@@ -111,7 +94,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   slide: {
-    width,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
