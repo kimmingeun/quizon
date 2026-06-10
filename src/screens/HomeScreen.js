@@ -11,13 +11,15 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { isTodayDone, getStreak, getLastScore } from '../utils/storage';
+import { isTodayDone, getStreak, getLastScore, getXP } from '../utils/storage';
 import { fetchStockNews } from '../utils/news';
+import { getLevelInfo } from '../utils/xp';
 
 export default function HomeScreen({ navigation }) {
   const [todayDone, setTodayDone] = useState(false);
   const [streak, setStreak] = useState(0);
   const [lastScore, setLastScore] = useState(null);
+  const [levelInfo, setLevelInfo] = useState(null);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
 
@@ -33,9 +35,11 @@ export default function HomeScreen({ navigation }) {
         const done = await isTodayDone();
         const s = await getStreak();
         const score = await getLastScore();
+        const xp = await getXP();
         setTodayDone(done);
         setStreak(s);
         setLastScore(score);
+        setLevelInfo(getLevelInfo(xp));
       };
       load();
     }, [])
@@ -71,12 +75,20 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.greeting}>안녕하세요 👋</Text>
             <Text style={styles.subGreeting}>{getStreakMessage()}</Text>
           </View>
-          {streak > 0 && (
-            <View style={styles.streakBadge}>
-              <Text style={styles.streakEmoji}>🔥</Text>
-              <Text style={styles.streakCount}>{streak}</Text>
-            </View>
-          )}
+          <View style={styles.badgeRow}>
+            {levelInfo && (
+              <View style={styles.levelBadge}>
+                <Text style={styles.levelEmoji}>{levelInfo.current.emoji}</Text>
+                <Text style={styles.levelText}>Lv.{levelInfo.current.level}</Text>
+              </View>
+            )}
+            {streak > 0 && (
+              <View style={styles.streakBadge}>
+                <Text style={styles.streakEmoji}>🔥</Text>
+                <Text style={styles.streakCount}>{streak}</Text>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* 오늘의 퀴즈 메인 카드 */}
@@ -210,6 +222,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#EA580C',
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  levelBadge: {
+    backgroundColor: '#EFF6FF',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  levelEmoji: { fontSize: 16 },
+  levelText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#3B82F6',
   },
   mainCard: {
     backgroundColor: '#1A1A2E',

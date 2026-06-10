@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { checkAnswer } from '../utils/quizHelper';
 import { saveQuizResult } from '../utils/storage';
+import { getLevelInfo } from '../utils/xp';
 
 export default function ResultScreen({ route, navigation }) {
   const { questions, answers } = route.params;
+  const [xpResult, setXpResult] = useState(null);
 
   const correctCount = questions.filter((q, i) => checkAnswer(q, answers[i])).length;
   const wrongCount = questions.length - correctCount;
@@ -20,7 +22,10 @@ export default function ResultScreen({ route, navigation }) {
   const percentage = Math.round((correctCount / total) * 100);
 
   useEffect(() => {
-    saveQuizResult(correctCount, total);
+    saveQuizResult(correctCount, total, questions, answers).then(({ earnedXP, totalXP }) => {
+      const levelInfo = getLevelInfo(totalXP);
+      setXpResult({ earnedXP, totalXP, levelInfo });
+    });
   }, []);
 
   const getMessage = () => {
@@ -69,6 +74,28 @@ export default function ResultScreen({ route, navigation }) {
             </View>
           </View>
         </View>
+
+        {/* XP 획득 카드 */}
+        {xpResult && (
+          <View style={styles.xpCard}>
+            <View style={styles.xpTop}>
+              <Text style={styles.xpEmoji}>{xpResult.levelInfo.current.emoji}</Text>
+              <View>
+                <Text style={styles.xpLevel}>Lv.{xpResult.levelInfo.current.level} {xpResult.levelInfo.current.title}</Text>
+                <Text style={styles.xpEarned}>+{xpResult.earnedXP} XP 획득!</Text>
+              </View>
+            </View>
+            <View style={styles.xpBarBg}>
+              <View style={[styles.xpBarFill, { width: `${Math.round(xpResult.levelInfo.progress * 100)}%` }]} />
+            </View>
+            <View style={styles.xpBarLabels}>
+              <Text style={styles.xpBarText}>{xpResult.totalXP} XP</Text>
+              {xpResult.levelInfo.next && (
+                <Text style={styles.xpBarText}>다음 레벨: {xpResult.levelInfo.next.minXp} XP</Text>
+              )}
+            </View>
+          </View>
+        )}
 
         {/* 문제 복습 */}
         <Text style={styles.reviewTitle}>📋 문제 복습</Text>
@@ -257,6 +284,56 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#6B7280',
     lineHeight: 20,
+  },
+
+  // XP 카드
+  xpCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  xpTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  xpEmoji: {
+    fontSize: 32,
+  },
+  xpLevel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1A1A2E',
+    marginBottom: 2,
+  },
+  xpEarned: {
+    fontSize: 13,
+    color: '#3B82F6',
+    fontWeight: '700',
+  },
+  xpBarBg: {
+    height: 8,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
+  xpBarFill: {
+    height: 8,
+    backgroundColor: '#3B82F6',
+    borderRadius: 4,
+  },
+  xpBarLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  xpBarText: {
+    fontSize: 11,
+    color: '#9CA3AF',
   },
 
   // 버튼
