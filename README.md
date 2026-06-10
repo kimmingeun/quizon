@@ -74,6 +74,14 @@ npx expo start
 # 📱 Expo Go 앱으로 QR 스캔하면 바로 확인 가능!
 ```
 
+VSCode에서 바로 확인하려면 웹 브라우저로 실행할 수 있어요.
+
+```bash
+npx expo start --web
+```
+
+> 브라우저에서 `http://localhost:8081`로 열립니다.
+
 ---
 
 ## 📁 프로젝트 구조
