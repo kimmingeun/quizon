@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,20 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  ScrollView,
+  Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { isTodayDone, getStreak, getLastScore } from '../utils/storage';
+import { fetchStockNews } from '../utils/news';
 
 export default function HomeScreen({ navigation }) {
   const [todayDone, setTodayDone] = useState(false);
   const [streak, setStreak] = useState(0);
   const [lastScore, setLastScore] = useState(null);
+  const [news, setNews] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(true);
 
   const today = new Date().toLocaleDateString('ko-KR', {
     month: 'long',
@@ -35,6 +41,13 @@ export default function HomeScreen({ navigation }) {
     }, [])
   );
 
+  useEffect(() => {
+    fetchStockNews()
+      .then(setNews)
+      .catch(() => setNews([]))
+      .finally(() => setNewsLoading(false));
+  }, []);
+
   const getStreakMessage = () => {
     if (streak === 0) return '오늘 첫 퀴즈를 풀어보세요!';
     if (streak < 3) return `${streak}일째 공부 중이에요 👏`;
@@ -42,73 +55,78 @@ export default function HomeScreen({ navigation }) {
     return `${streak}일 연속! 주식 고수 등극 🏆`;
   };
 
+  const formatDate = (pubDate) => {
+    const d = new Date(pubDate);
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#F5F8FF" />
+      <ScrollView showsVerticalScrollIndicator={false}>
 
-      {/* 상단 헤더 */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>안녕하세요 👋</Text>
-          <Text style={styles.subGreeting}>{getStreakMessage()}</Text>
-        </View>
-        {streak > 0 && (
-          <View style={styles.streakBadge}>
-            <Text style={styles.streakEmoji}>🔥</Text>
-            <Text style={styles.streakCount}>{streak}</Text>
+        {/* 상단 헤더 */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>안녕하세요 👋</Text>
+            <Text style={styles.subGreeting}>{getStreakMessage()}</Text>
           </View>
-        )}
-      </View>
-
-      {/* 오늘의 퀴즈 메인 카드 */}
-      <View style={styles.mainCard}>
-        <View style={styles.mainCardTop}>
-          <Text style={styles.cardLabel}>TODAY</Text>
-          <Text style={styles.cardDate}>{today}</Text>
+          {streak > 0 && (
+            <View style={styles.streakBadge}>
+              <Text style={styles.streakEmoji}>🔥</Text>
+              <Text style={styles.streakCount}>{streak}</Text>
+            </View>
+          )}
         </View>
 
-        <View style={styles.divider} />
-
-        {todayDone && lastScore ? (
-          <View style={styles.doneSection}>
-            <Text style={styles.doneEmoji}>✅</Text>
-            <Text style={styles.doneTitle}>오늘 퀴즈 완료!</Text>
-            <View style={styles.scoreRow}>
-              <Text style={styles.scoreHighlight}>{lastScore.correct}</Text>
-              <Text style={styles.scoreSlash}> / {lastScore.total} 정답</Text>
-            </View>
+        {/* 오늘의 퀴즈 메인 카드 */}
+        <View style={styles.mainCard}>
+          <View style={styles.mainCardTop}>
+            <Text style={styles.cardLabel}>TODAY</Text>
+            <Text style={styles.cardDate}>{today}</Text>
           </View>
-        ) : (
-          <View style={styles.quizInfoSection}>
-            <View style={styles.infoRow}>
-              <View style={styles.infoBadge}>
-                <Text style={styles.infoBadgeText}>📝 10문제</Text>
-              </View>
-              <View style={styles.infoBadge}>
-                <Text style={styles.infoBadgeText}>⏱ 약 5분</Text>
-              </View>
-              <View style={styles.infoBadge}>
-                <Text style={styles.infoBadgeText}>📈 주식 기초</Text>
-              </View>
-            </View>
-          </View>
-        )}
-      </View>
 
-      {/* 카테고리 */}
-      <View style={styles.categorySection}>
-        <Text style={styles.categoryTitle}>오늘의 출제 범위</Text>
-        <View style={styles.categoryRow}>
-          {['기초 개념', '주요 지표', '투자 용어'].map((c) => (
-            <View key={c} style={styles.categoryChip}>
-              <Text style={styles.categoryChipText}>{c}</Text>
+          <View style={styles.divider} />
+
+          {todayDone && lastScore ? (
+            <View style={styles.doneSection}>
+              <Text style={styles.doneEmoji}>✅</Text>
+              <Text style={styles.doneTitle}>오늘 퀴즈 완료!</Text>
+              <View style={styles.scoreRow}>
+                <Text style={styles.scoreHighlight}>{lastScore.correct}</Text>
+                <Text style={styles.scoreSlash}> / {lastScore.total} 정답</Text>
+              </View>
             </View>
-          ))}
+          ) : (
+            <View style={styles.quizInfoSection}>
+              <View style={styles.infoRow}>
+                <View style={styles.infoBadge}>
+                  <Text style={styles.infoBadgeText}>📝 10문제</Text>
+                </View>
+                <View style={styles.infoBadge}>
+                  <Text style={styles.infoBadgeText}>⏱ 약 5분</Text>
+                </View>
+                <View style={styles.infoBadge}>
+                  <Text style={styles.infoBadgeText}>📈 주식 기초</Text>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
-      </View>
 
-      {/* 시작 버튼 */}
-      <View style={styles.buttonArea}>
+        {/* 카테고리 */}
+        <View style={styles.categorySection}>
+          <Text style={styles.categoryTitle}>오늘의 출제 범위</Text>
+          <View style={styles.categoryRow}>
+            {['기초 개념', '주요 지표', '투자 용어'].map((c) => (
+              <View key={c} style={styles.categoryChip}>
+                <Text style={styles.categoryChipText}>{c}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* 시작 버튼 */}
         <TouchableOpacity
           style={styles.startButton}
           activeOpacity={0.85}
@@ -118,10 +136,37 @@ export default function HomeScreen({ navigation }) {
             {todayDone ? '🔄  다시 풀기' : '📈  오늘 퀴즈 시작'}
           </Text>
         </TouchableOpacity>
-      </View>
 
-      {/* 앱 이름 */}
-      <Text style={styles.appName}>QuizOn</Text>
+        {/* 주식 뉴스 */}
+        <View style={styles.newsSection}>
+          <Text style={styles.newsTitle}>📰 오늘의 주식 뉴스</Text>
+          {newsLoading ? (
+            <ActivityIndicator color="#3B82F6" style={{ marginTop: 16 }} />
+          ) : news.length === 0 ? (
+            <Text style={styles.newsEmpty}>뉴스를 불러올 수 없어요.</Text>
+          ) : (
+            news.map((item, i) => (
+              <TouchableOpacity
+                key={i}
+                style={styles.newsItem}
+                activeOpacity={0.7}
+                onPress={() => Linking.openURL(item.link)}
+              >
+                <View style={styles.newsItemInner}>
+                  <Text style={styles.newsItemTitle} numberOfLines={2}>
+                    {item.title}
+                  </Text>
+                  <Text style={styles.newsItemDate}>{formatDate(item.pubDate)}</Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </View>
+
+        {/* 앱 이름 */}
+        <Text style={styles.appName}>QuizOn</Text>
+
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -239,7 +284,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   categorySection: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   categoryTitle: {
     fontSize: 13,
@@ -264,16 +309,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
-  buttonArea: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 16,
-  },
   startButton: {
     backgroundColor: '#3B82F6',
     borderRadius: 18,
     paddingVertical: 20,
     alignItems: 'center',
+    marginBottom: 28,
     shadowColor: '#3B82F6',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
@@ -285,6 +326,47 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     letterSpacing: 0.5,
+  },
+  newsSection: {
+    marginBottom: 16,
+  },
+  newsTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1A1A2E',
+    marginBottom: 12,
+  },
+  newsEmpty: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  newsItem: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  newsItemInner: {
+    padding: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  newsItemTitle: {
+    flex: 1,
+    fontSize: 13,
+    color: '#1A1A2E',
+    fontWeight: '500',
+    lineHeight: 19,
+  },
+  newsItemDate: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 2,
   },
   appName: {
     textAlign: 'center',
