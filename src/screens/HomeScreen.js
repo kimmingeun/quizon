@@ -206,9 +206,11 @@ export default function HomeScreen({ navigation }) {
                               ? item.price.toFixed(2)
                               : item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}
                           </Text>
-                          <Text style={[styles.marketChange, { color: isUp ? '#10B981' : '#EF4444' }]}>
-                            {isUp ? '+' : ''}{item.changePercent.toFixed(2)}%
-                          </Text>
+                          {item.changePercent !== null && (
+                            <Text style={[styles.marketChange, { color: item.changePercent >= 0 ? '#10B981' : '#EF4444' }]}>
+                              {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
+                            </Text>
+                          )}
                         </View>
                       </View>
                     );
