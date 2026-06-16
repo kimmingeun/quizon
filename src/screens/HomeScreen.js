@@ -13,6 +13,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { isTodayDone, getStreak, getLastScore, getXP } from '../utils/storage';
 import { fetchStockNews } from '../utils/news';
+import { fetchMarketData } from '../utils/market';
 import { getLevelInfo } from '../utils/xp';
 
 export default function HomeScreen({ navigation }) {
@@ -22,6 +23,8 @@ export default function HomeScreen({ navigation }) {
   const [levelInfo, setLevelInfo] = useState(null);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
+  const [market, setMarket] = useState([]);
+  const [marketLoading, setMarketLoading] = useState(true);
 
   const today = new Date().toLocaleDateString('ko-KR', {
     month: 'long',
@@ -50,6 +53,10 @@ export default function HomeScreen({ navigation }) {
       .then(setNews)
       .catch(() => setNews([]))
       .finally(() => setNewsLoading(false));
+    fetchMarketData()
+      .then(setMarket)
+      .catch(() => setMarket([]))
+      .finally(() => setMarketLoading(false));
   }, []);
 
   const getStreakMessage = () => {
@@ -173,6 +180,44 @@ export default function HomeScreen({ navigation }) {
             {todayDone ? '🔄  다시 풀기' : '📈  오늘 퀴즈 시작'}
           </Text>
         </TouchableOpacity>
+
+        {/* 시장 지수 */}
+        <View style={styles.marketSection}>
+          <Text style={styles.marketTitle}>📊 시장 현황</Text>
+          {marketLoading ? (
+            <ActivityIndicator color="#3B82F6" style={{ marginTop: 16 }} />
+          ) : market.length === 0 ? (
+            <Text style={styles.marketEmpty}>시장 데이터를 불러올 수 없어요.</Text>
+          ) : (
+            ['국내', '미국', '환율'].map((category) => {
+              const items = market.filter((i) => i.category === category);
+              if (!items.length) return null;
+              return (
+                <View key={category} style={styles.marketCategory}>
+                  <Text style={styles.marketCategoryLabel}>{category}</Text>
+                  {items.map((item) => {
+                    const isUp = item.changePercent >= 0;
+                    return (
+                      <View key={item.symbol} style={styles.marketItem}>
+                        <Text style={styles.marketName}>{item.name}</Text>
+                        <View style={styles.marketRight}>
+                          <Text style={styles.marketPrice}>
+                            {item.category === '환율'
+                              ? item.price.toFixed(2)
+                              : item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}
+                          </Text>
+                          <Text style={[styles.marketChange, { color: isUp ? '#10B981' : '#EF4444' }]}>
+                            {isUp ? '+' : ''}{item.changePercent.toFixed(2)}%
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              );
+            })
+          )}
+        </View>
 
         {/* 주식 뉴스 */}
         <View style={styles.newsSection}>
@@ -420,6 +465,67 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     letterSpacing: 0.5,
+  },
+  marketSection: {
+    marginBottom: 20,
+  },
+  marketTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1A1A2E',
+    marginBottom: 12,
+  },
+  marketEmpty: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  marketCategory: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  marketCategoryLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#6B7280',
+    letterSpacing: 1,
+    backgroundColor: '#F9FAFB',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  marketItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  marketName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A1A2E',
+  },
+  marketRight: {
+    alignItems: 'flex-end',
+  },
+  marketPrice: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A1A2E',
+  },
+  marketChange: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 1,
   },
   newsSection: {
     marginBottom: 16,
