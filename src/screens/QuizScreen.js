@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { getTodayQuestions } from '../utils/quizHelper';
 
 const questions = getTodayQuestions();
@@ -155,10 +156,17 @@ export default function QuizScreen({ navigation }) {
       {/* 하단 다음 버튼 */}
       {showResult && (
         <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext} activeOpacity={0.85}>
-            <Text style={styles.nextButtonText}>
-              {isLast ? '결과 보기  →' : '다음 문제  →'}
-            </Text>
+          <TouchableOpacity style={styles.nextButtonWrap} onPress={handleNext} activeOpacity={0.85}>
+            <LinearGradient
+              colors={['#7C5CFC', '#5B8DEF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.nextButton}
+            >
+              <Text style={styles.nextButtonText}>
+                {isLast ? '결과 보기  →' : '다음 문제  →'}
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       )}
@@ -169,7 +177,7 @@ export default function QuizScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F8FF',
+    backgroundColor: '#FAFAFF',
   },
 
   // 상단 바
@@ -205,7 +213,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: 8,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#7C5CFC',
     borderRadius: 4,
   },
   progressLabel: {
@@ -229,7 +237,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   tag: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#EDE9FE',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 5,
@@ -240,7 +248,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: '#7C5CFC',
   },
 
   // 문제
@@ -271,8 +279,8 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
   oxSelected: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#3B82F6',
+    backgroundColor: '#EDE9FE',
+    borderColor: '#7C5CFC',
   },
   oxCorrect: {
     backgroundColor: '#ECFDF5',
@@ -312,8 +320,8 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
   optionSelected: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#3B82F6',
+    backgroundColor: '#EDE9FE',
+    borderColor: '#7C5CFC',
   },
   optionCorrect: {
     backgroundColor: '#ECFDF5',
@@ -381,16 +389,23 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#F5F8FF',
+    backgroundColor: '#FAFAFF',
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 32,
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
   },
+  nextButtonWrap: {
+    borderRadius: 18,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+  },
   nextButton: {
-    backgroundColor: '#1A1A2E',
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 18,
     alignItems: 'center',
   },

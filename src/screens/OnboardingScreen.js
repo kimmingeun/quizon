@@ -7,6 +7,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SLIDES = [
   {
@@ -47,40 +48,47 @@ export default function OnboardingScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* 건너뛰기 */}
-      <TouchableOpacity style={styles.skip} onPress={finish}>
-        <Text style={styles.skipText}>건너뛰기</Text>
-      </TouchableOpacity>
+    <LinearGradient
+      colors={['#7C5CFC', '#5B8DEF', '#3BC9F5']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={styles.container}>
+        {/* 건너뛰기 */}
+        <TouchableOpacity style={styles.skip} onPress={finish}>
+          <Text style={styles.skipText}>건너뛰기</Text>
+        </TouchableOpacity>
 
-      {/* 슬라이드 */}
-      <View style={styles.slide}>
-        <Text style={styles.slideEmoji}>{slide.emoji}</Text>
-        <Text style={styles.slideTitle}>{slide.title}</Text>
-        <Text style={styles.slideSub}>{slide.sub}</Text>
-      </View>
+        {/* 슬라이드 */}
+        <View style={styles.slide}>
+          <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+          <Text style={styles.slideTitle}>{slide.title}</Text>
+          <Text style={styles.slideSub}>{slide.sub}</Text>
+        </View>
 
-      {/* 인디케이터 */}
-      <View style={styles.dots}>
-        {SLIDES.map((_, i) => (
-          <View key={i} style={[styles.dot, i === currentIndex && styles.dotActive]} />
-        ))}
-      </View>
+        {/* 인디케이터 */}
+        <View style={styles.dots}>
+          {SLIDES.map((_, i) => (
+            <View key={i} style={[styles.dot, i === currentIndex && styles.dotActive]} />
+          ))}
+        </View>
 
-      {/* 버튼 */}
-      <TouchableOpacity style={styles.button} onPress={handleNext} activeOpacity={0.85}>
-        <Text style={styles.buttonText}>
-          {currentIndex === SLIDES.length - 1 ? '🚀  시작하기' : '다음'}
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        {/* 버튼 */}
+        <TouchableOpacity style={styles.button} onPress={handleNext} activeOpacity={0.85}>
+          <Text style={styles.buttonText}>
+            {currentIndex === SLIDES.length - 1 ? '🚀  시작하기' : '다음'}
+          </Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'transparent',
     alignItems: 'center',
   },
   skip: {
@@ -90,8 +98,9 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   skipText: {
-    color: '#6B7280',
+    color: 'rgba(255,255,255,0.8)',
     fontSize: 14,
+    fontWeight: '600',
   },
   slide: {
     flex: 1,
@@ -113,7 +122,7 @@ const styles = StyleSheet.create({
   },
   slideSub: {
     fontSize: 15,
-    color: '#9CA3AF',
+    color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -126,28 +135,28 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#2D2D44',
+    backgroundColor: 'rgba(255,255,255,0.4)',
   },
   dotActive: {
     width: 24,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 18,
+    backgroundColor: '#fff',
+    borderRadius: 22,
     paddingVertical: 18,
-    paddingHorizontal: 48,
+    paddingHorizontal: 56,
     marginBottom: 32,
-    shadowColor: '#3B82F6',
+    shadowColor: '#1A1A2E',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 8,
   },
   buttonText: {
-    color: '#fff',
+    color: '#7C5CFC',
     fontSize: 17,
-    fontWeight: 'bold',
+    fontWeight: '800',
     letterSpacing: 0.5,
   },
 });

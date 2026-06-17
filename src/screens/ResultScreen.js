@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { checkAnswer } from '../utils/quizHelper';
 import { saveQuizResult } from '../utils/storage';
 import { getLevelInfo } from '../utils/xp';
@@ -46,7 +47,12 @@ export default function ResultScreen({ route, navigation }) {
         style={Platform.OS === 'web' ? { overflow: 'auto' } : {}}
       >
         {/* 점수 카드 */}
-        <View style={styles.scoreCard}>
+        <LinearGradient
+          colors={['#7C5CFC', '#5B8DEF', '#3BC9F5']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.scoreCard}
+        >
           <Text style={styles.scoreEmoji}>{emoji}</Text>
           <Text style={styles.scoreTitle}>{title}</Text>
           <Text style={styles.scoreSub}>{sub}</Text>
@@ -73,7 +79,7 @@ export default function ResultScreen({ route, navigation }) {
               <Text style={styles.summaryLabel}>정확도</Text>
             </View>
           </View>
-        </View>
+        </LinearGradient>
 
         {/* XP 획득 카드 */}
         {xpResult && (
@@ -132,11 +138,18 @@ export default function ResultScreen({ route, navigation }) {
             <Text style={styles.retryText}>🔄 다시 풀기</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.homeButton}
+            style={styles.homeButtonWrap}
             onPress={() => navigation.navigate('Home')}
             activeOpacity={0.85}
           >
-            <Text style={styles.homeText}>🏠 홈으로</Text>
+            <LinearGradient
+              colors={['#7C5CFC', '#5B8DEF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.homeButton}
+            >
+              <Text style={styles.homeText}>🏠 홈으로</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -149,7 +162,7 @@ export default function ResultScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F8FF',
+    backgroundColor: '#FAFAFF',
   },
   scroll: {
     padding: 20,
@@ -157,11 +170,15 @@ const styles = StyleSheet.create({
 
   // 점수 카드
   scoreCard: {
-    backgroundColor: '#1A1A2E',
-    borderRadius: 24,
+    borderRadius: 28,
     padding: 28,
     alignItems: 'center',
     marginBottom: 28,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
   },
   scoreEmoji: {
     fontSize: 48,
@@ -175,7 +192,7 @@ const styles = StyleSheet.create({
   },
   scoreSub: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: 'rgba(255,255,255,0.85)',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -186,19 +203,19 @@ const styles = StyleSheet.create({
   },
   scoreNum: {
     fontSize: 64,
-    fontWeight: 'bold',
-    color: '#3B82F6',
+    fontWeight: '800',
+    color: '#FFE066',
     lineHeight: 72,
   },
   scoreOf: {
     fontSize: 28,
-    color: '#6B7280',
+    color: 'rgba(255,255,255,0.8)',
     fontWeight: '600',
     marginLeft: 4,
   },
   summaryRow: {
     flexDirection: 'row',
-    backgroundColor: '#2D2D44',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderRadius: 16,
     paddingVertical: 16,
     width: '100%',
@@ -211,17 +228,17 @@ const styles = StyleSheet.create({
   summaryWrong: {},
   summaryNum: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#10B981',
+    fontWeight: '800',
+    color: '#fff',
     marginBottom: 4,
   },
   summaryLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: 'rgba(255,255,255,0.85)',
   },
   summaryDivider: {
     width: 1,
-    backgroundColor: '#3D3D54',
+    backgroundColor: 'rgba(255,255,255,0.25)',
     marginVertical: 4,
   },
 
@@ -289,11 +306,14 @@ const styles = StyleSheet.create({
   // XP 카드
   xpCard: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 16,
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2,
   },
   xpTop: {
     flexDirection: 'row',
@@ -312,19 +332,19 @@ const styles = StyleSheet.create({
   },
   xpEarned: {
     fontSize: 13,
-    color: '#3B82F6',
-    fontWeight: '700',
+    color: '#7C5CFC',
+    fontWeight: '800',
   },
   xpBarBg: {
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#EDE9FE',
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 6,
   },
   xpBarFill: {
     height: 8,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#7C5CFC',
     borderRadius: 4,
   },
   xpBarLabels: {
@@ -344,33 +364,33 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 16,
+    backgroundColor: '#EDE9FE',
+    borderRadius: 18,
     paddingVertical: 18,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
   retryText: {
     fontSize: 15,
-    fontWeight: 'bold',
-    color: '#374151',
+    fontWeight: '800',
+    color: '#7C5CFC',
+  },
+  homeButtonWrap: {
+    flex: 1,
+    borderRadius: 18,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
   },
   homeButton: {
-    flex: 1,
-    backgroundColor: '#3B82F6',
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 18,
     alignItems: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
   },
   homeText: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#fff',
   },
 });
