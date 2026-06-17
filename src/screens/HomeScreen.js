@@ -15,6 +15,7 @@ import { isTodayDone, getStreak, getLastScore, getXP } from '../utils/storage';
 import { fetchStockNews } from '../utils/news';
 import { fetchMarketData } from '../utils/market';
 import { getLevelInfo } from '../utils/xp';
+import Sparkline from '../components/Sparkline';
 
 export default function HomeScreen({ navigation }) {
   const [todayDone, setTodayDone] = useState(false);
@@ -196,23 +197,33 @@ export default function HomeScreen({ navigation }) {
                 <View key={category} style={styles.marketCategory}>
                   <Text style={styles.marketCategoryLabel}>{category}</Text>
                   {items.map((item) => {
-                    const isUp = item.changePercent >= 0;
+                    const up = item.changePercent != null && item.changePercent >= 0;
+                    const color = item.changePercent == null ? '#6B7280' : up ? '#EF4444' : '#3B82F6';
                     return (
                       <View key={item.symbol} style={styles.marketItem}>
-                        <Text style={styles.marketName}>{item.name}</Text>
+                        <View style={styles.marketNameCol}>
+                          <Text style={styles.marketName}>{item.name}</Text>
+                          {item.changePercent != null && (
+                            <Text style={[styles.marketTrend, { color }]}>
+                              {up ? '▲' : '▼'} {Math.abs(item.changePercent).toFixed(2)}%
+                            </Text>
+                          )}
+                        </View>
+
+                        <View style={styles.marketSparkCol}>
+                          {item.spark && item.spark.length >= 2 && (
+                            <Sparkline data={item.spark} color={color} />
+                          )}
+                        </View>
+
                         <View style={styles.marketRight}>
-                          <Text style={styles.marketPrice}>
+                          <Text style={[styles.marketPrice, { color }]}>
                             {item.price == null
                               ? '-'
                               : item.category === '환율'
-                              ? item.price.toFixed(2)
+                              ? item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })
                               : item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}
                           </Text>
-                          {item.changePercent != null && (
-                            <Text style={[styles.marketChange, { color: item.changePercent >= 0 ? '#10B981' : '#EF4444' }]}>
-                              {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
-                            </Text>
-                          )}
                         </View>
                       </View>
                     );
@@ -506,30 +517,40 @@ const styles = StyleSheet.create({
   },
   marketItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
+  marketNameCol: {
+    flex: 1,
+  },
   marketName: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#1A1A2E',
   },
+  marketTrend: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  marketSparkCol: {
+    width: 56,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 12,
+  },
   marketRight: {
+    minWidth: 80,
     alignItems: 'flex-end',
   },
   marketPrice: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#1A1A2E',
-  },
-  marketChange: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 1,
   },
   newsSection: {
     marginBottom: 16,
