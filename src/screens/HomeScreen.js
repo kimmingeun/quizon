@@ -9,13 +9,14 @@ import {
   ScrollView,
   Linking,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { isTodayDone, getStreak, getLastScore, getXP } from '../utils/storage';
 import { fetchStockNews } from '../utils/news';
 import { fetchMarketData } from '../utils/market';
-import { getLevelInfo } from '../utils/xp';
+import { getLevelInfo, LEVELS } from '../utils/xp';
 import Sparkline from '../components/Sparkline';
 
 export default function HomeScreen({ navigation }) {
@@ -27,6 +28,7 @@ export default function HomeScreen({ navigation }) {
   const [newsLoading, setNewsLoading] = useState(true);
   const [market, setMarket] = useState([]);
   const [marketLoading, setMarketLoading] = useState(true);
+  const [showLevels, setShowLevels] = useState(false);
 
   const today = new Date().toLocaleDateString('ko-KR', {
     month: 'long',
@@ -86,10 +88,14 @@ export default function HomeScreen({ navigation }) {
           </View>
           <View style={styles.badgeRow}>
             {levelInfo && (
-              <View style={styles.levelBadge}>
+              <TouchableOpacity
+                style={styles.levelBadge}
+                activeOpacity={0.7}
+                onPress={() => setShowLevels(true)}
+              >
                 <Text style={styles.levelEmoji}>{levelInfo.current.emoji}</Text>
                 <Text style={styles.levelText}>Lv.{levelInfo.current.level}</Text>
-              </View>
+              </TouchableOpacity>
             )}
             {streak > 0 && (
               <View style={styles.streakBadge}>
@@ -282,6 +288,57 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.appName}>QuizOn</Text>
 
       </ScrollView>
+
+      {/* 등급 안내 모달 */}
+      <Modal
+        visible={showLevels}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowLevels(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowLevels(false)}
+        >
+          <TouchableOpacity activeOpacity={1} style={styles.modalCard}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>🏆 등급 안내</Text>
+            <Text style={styles.modalSub}>퀴즈를 풀고 XP를 모아 레벨업하세요!</Text>
+
+            {LEVELS.map((lv) => {
+              const isCurrent = levelInfo && levelInfo.current.level === lv.level;
+              return (
+                <View
+                  key={lv.level}
+                  style={[styles.levelRow, isCurrent && styles.levelRowActive]}
+                >
+                  <Text style={styles.levelRowEmoji}>{lv.emoji}</Text>
+                  <View style={styles.levelRowInfo}>
+                    <Text style={[styles.levelRowTitle, isCurrent && styles.levelRowTitleActive]}>
+                      Lv.{lv.level} {lv.title}
+                    </Text>
+                    <Text style={styles.levelRowXp}>{lv.minXp.toLocaleString('ko-KR')} XP 부터</Text>
+                  </View>
+                  {isCurrent && (
+                    <View style={styles.levelCurrentBadge}>
+                      <Text style={styles.levelCurrentText}>현재</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+
+            <TouchableOpacity
+              style={styles.modalClose}
+              activeOpacity={0.85}
+              onPress={() => setShowLevels(false)}
+            >
+              <Text style={styles.modalCloseText}>닫기</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -627,5 +684,96 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     paddingBottom: 12,
     paddingTop: 8,
+  },
+
+  // 등급 모달
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(26,26,46,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 32,
+  },
+  modalHandle: {
+    alignSelf: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E5E7EB',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1A1A2E',
+    marginBottom: 4,
+  },
+  modalSub: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginBottom: 20,
+  },
+  levelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    marginBottom: 8,
+    backgroundColor: '#F9FAFB',
+  },
+  levelRowActive: {
+    backgroundColor: '#EDE9FE',
+    borderWidth: 1.5,
+    borderColor: '#7C5CFC',
+  },
+  levelRowEmoji: {
+    fontSize: 28,
+    marginRight: 14,
+  },
+  levelRowInfo: {
+    flex: 1,
+  },
+  levelRowTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1A1A2E',
+    marginBottom: 2,
+  },
+  levelRowTitleActive: {
+    color: '#7C5CFC',
+  },
+  levelRowXp: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  levelCurrentBadge: {
+    backgroundColor: '#7C5CFC',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  levelCurrentText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#fff',
+  },
+  modalClose: {
+    marginTop: 12,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  modalCloseText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#6B7280',
   },
 });
