@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import Touchable from '../components/Touchable';
 
 const SLIDES = [
   {
@@ -56,9 +57,9 @@ export default function OnboardingScreen({ navigation }) {
     >
       <SafeAreaView style={styles.container}>
         {/* 건너뛰기 */}
-        <TouchableOpacity style={styles.skip} onPress={finish}>
+        <Touchable style={styles.skip} onPress={finish}>
           <Text style={styles.skipText}>건너뛰기</Text>
-        </TouchableOpacity>
+        </Touchable>
 
         {/* 슬라이드 */}
         <View style={styles.slide}>
@@ -75,11 +76,11 @@ export default function OnboardingScreen({ navigation }) {
         </View>
 
         {/* 버튼 */}
-        <TouchableOpacity style={styles.button} onPress={handleNext} activeOpacity={0.85}>
+        <Touchable style={styles.button} hoverStyle={styles.buttonHover} onPress={handleNext}>
           <Text style={styles.buttonText}>
             {currentIndex === SLIDES.length - 1 ? '🚀  시작하기' : '다음'}
           </Text>
-        </TouchableOpacity>
+        </Touchable>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -140,6 +141,9 @@ const styles = StyleSheet.create({
   dotActive: {
     width: 24,
     backgroundColor: '#fff',
+  },
+  buttonHover: {
+    backgroundColor: '#F5F3FF',
   },
   button: {
     backgroundColor: '#fff',

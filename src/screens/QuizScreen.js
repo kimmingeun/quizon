@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getTodayQuestions } from '../utils/quizHelper';
+import Touchable from '../components/Touchable';
 
 const questions = getTodayQuestions();
 
@@ -64,12 +65,13 @@ export default function QuizScreen({ navigation }) {
 
       {/* 상단 진행 영역 */}
       <View style={styles.topBar}>
-        <TouchableOpacity
+        <Touchable
           style={styles.backButton}
+          hoverStyle={styles.backButtonHover}
           onPress={() => navigation.navigate('Home')}
         >
           <Text style={styles.backText}>✕</Text>
-        </TouchableOpacity>
+        </Touchable>
 
         <View style={styles.progressWrapper}>
           <View style={styles.progressTrack}>
@@ -99,11 +101,10 @@ export default function QuizScreen({ navigation }) {
         {question.type === 'ox' && (
           <View style={styles.oxRow}>
             {[true, false].map((val) => (
-              <TouchableOpacity
+              <Touchable
                 key={String(val)}
                 style={[styles.oxButton, getOXStyle(val)]}
                 onPress={() => handleAnswer(val)}
-                activeOpacity={0.8}
               >
                 <Text style={[
                   styles.oxText,
@@ -112,7 +113,7 @@ export default function QuizScreen({ navigation }) {
                 ]}>
                   {val ? 'O' : 'X'}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
         )}
@@ -121,11 +122,10 @@ export default function QuizScreen({ navigation }) {
         {question.type === 'multiple' && (
           <View style={styles.optionList}>
             {question.options.map((option, idx) => (
-              <TouchableOpacity
+              <Touchable
                 key={idx}
                 style={[styles.optionButton, getOptionStyle(idx)]}
                 onPress={() => handleAnswer(idx)}
-                activeOpacity={0.8}
               >
                 <View style={[
                   styles.optionIndex,
@@ -135,7 +135,7 @@ export default function QuizScreen({ navigation }) {
                   <Text style={styles.optionIndexText}>{['①','②','③','④'][idx]}</Text>
                 </View>
                 <Text style={styles.optionText}>{option}</Text>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
         )}
@@ -156,7 +156,7 @@ export default function QuizScreen({ navigation }) {
       {/* 하단 다음 버튼 */}
       {showResult && (
         <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.nextButtonWrap} onPress={handleNext} activeOpacity={0.85}>
+          <Touchable style={styles.nextButtonWrap} onPress={handleNext}>
             <LinearGradient
               colors={['#7C5CFC', '#5B8DEF']}
               start={{ x: 0, y: 0 }}
@@ -167,7 +167,7 @@ export default function QuizScreen({ navigation }) {
                 {isLast ? '결과 보기  →' : '다음 문제  →'}
               </Text>
             </LinearGradient>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       )}
     </SafeAreaView>
@@ -196,6 +196,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E7EB',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  backButtonHover: {
+    backgroundColor: '#D1D5DB',
   },
   backText: {
     fontSize: 13,

@@ -18,6 +18,7 @@ import { fetchStockNews } from '../utils/news';
 import { fetchMarketData } from '../utils/market';
 import { getLevelInfo, LEVELS } from '../utils/xp';
 import Sparkline from '../components/Sparkline';
+import Touchable from '../components/Touchable';
 
 export default function HomeScreen({ navigation }) {
   const [todayDone, setTodayDone] = useState(false);
@@ -88,14 +89,14 @@ export default function HomeScreen({ navigation }) {
           </View>
           <View style={styles.badgeRow}>
             {levelInfo && (
-              <TouchableOpacity
+              <Touchable
                 style={styles.levelBadge}
-                activeOpacity={0.7}
+                hoverStyle={styles.levelBadgeHover}
                 onPress={() => setShowLevels(true)}
               >
                 <Text style={styles.levelEmoji}>{levelInfo.current.emoji}</Text>
                 <Text style={styles.levelText}>Lv.{levelInfo.current.level}</Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
             {streak > 0 && (
               <View style={styles.streakBadge}>
@@ -184,9 +185,8 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         {/* 시작 버튼 */}
-        <TouchableOpacity
+        <Touchable
           style={styles.startButtonWrap}
-          activeOpacity={0.85}
           onPress={() => navigation.navigate('Quiz')}
         >
           <LinearGradient
@@ -199,7 +199,7 @@ export default function HomeScreen({ navigation }) {
               {todayDone ? '🔄  다시 풀기' : '📈  오늘 퀴즈 시작'}
             </Text>
           </LinearGradient>
-        </TouchableOpacity>
+        </Touchable>
 
         {/* 시장 지수 */}
         <View style={styles.marketSection}>
@@ -267,10 +267,10 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.newsEmpty}>뉴스를 불러올 수 없어요.</Text>
           ) : (
             news.map((item, i) => (
-              <TouchableOpacity
+              <Touchable
                 key={i}
                 style={styles.newsItem}
-                activeOpacity={0.7}
+                hoverStyle={styles.newsItemHover}
                 onPress={() => Linking.openURL(item.link)}
               >
                 <View style={styles.newsItemInner}>
@@ -279,7 +279,7 @@ export default function HomeScreen({ navigation }) {
                   </Text>
                   <Text style={styles.newsItemDate}>{formatDate(item.pubDate)}</Text>
                 </View>
-              </TouchableOpacity>
+              </Touchable>
             ))
           )}
         </View>
@@ -329,13 +329,13 @@ export default function HomeScreen({ navigation }) {
               );
             })}
 
-            <TouchableOpacity
+            <Touchable
               style={styles.modalClose}
-              activeOpacity={0.85}
+              hoverStyle={styles.modalCloseHover}
               onPress={() => setShowLevels(false)}
             >
               <Text style={styles.modalCloseText}>닫기</Text>
-            </TouchableOpacity>
+            </Touchable>
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
@@ -394,6 +394,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  levelBadgeHover: {
+    backgroundColor: '#DDD6FE',
   },
   levelEmoji: { fontSize: 16 },
   levelText: {
@@ -657,6 +660,9 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
   },
+  newsItemHover: {
+    backgroundColor: '#F5F3FF',
+  },
   newsItemInner: {
     padding: 14,
     flexDirection: 'row',
@@ -770,6 +776,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
+  },
+  modalCloseHover: {
+    backgroundColor: '#E5E7EB',
   },
   modalCloseText: {
     fontSize: 15,

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { checkAnswer } from '../utils/quizHelper';
+import Touchable from '../components/Touchable';
 import { saveQuizResult } from '../utils/storage';
 import { getLevelInfo } from '../utils/xp';
 
@@ -130,17 +131,16 @@ export default function ResultScreen({ route, navigation }) {
 
         {/* 하단 버튼 */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity
+          <Touchable
             style={styles.retryButton}
+            hoverStyle={styles.retryButtonHover}
             onPress={() => navigation.replace('Quiz')}
-            activeOpacity={0.8}
           >
             <Text style={styles.retryText}>🔄 다시 풀기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Touchable>
+          <Touchable
             style={styles.homeButtonWrap}
             onPress={() => navigation.navigate('Home')}
-            activeOpacity={0.85}
           >
             <LinearGradient
               colors={['#7C5CFC', '#5B8DEF']}
@@ -150,7 +150,7 @@ export default function ResultScreen({ route, navigation }) {
             >
               <Text style={styles.homeText}>🏠 홈으로</Text>
             </LinearGradient>
-          </TouchableOpacity>
+          </Touchable>
         </View>
 
         <View style={{ height: 20 }} />
@@ -368,6 +368,9 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     paddingVertical: 18,
     alignItems: 'center',
+  },
+  retryButtonHover: {
+    backgroundColor: '#DDD6FE',
   },
   retryText: {
     fontSize: 15,
