@@ -10,6 +10,7 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { isTodayDone, getStreak, getLastScore, getXP } from '../utils/storage';
 import { fetchStockNews } from '../utils/news';
@@ -100,7 +101,12 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         {/* 오늘의 퀴즈 메인 카드 */}
-        <View style={styles.mainCard}>
+        <LinearGradient
+          colors={['#7C5CFC', '#5B8DEF', '#3BC9F5']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.mainCard}
+        >
           <View style={styles.mainCardTop}>
             <Text style={styles.cardLabel}>TODAY</Text>
             <Text style={styles.cardDate}>{today}</Text>
@@ -157,7 +163,7 @@ export default function HomeScreen({ navigation }) {
               </View>
             </View>
           )}
-        </View>
+        </LinearGradient>
 
         {/* 카테고리 */}
         <View style={styles.categorySection}>
@@ -173,13 +179,20 @@ export default function HomeScreen({ navigation }) {
 
         {/* 시작 버튼 */}
         <TouchableOpacity
-          style={styles.startButton}
+          style={styles.startButtonWrap}
           activeOpacity={0.85}
           onPress={() => navigation.navigate('Quiz')}
         >
-          <Text style={styles.startButtonText}>
-            {todayDone ? '🔄  다시 풀기' : '📈  오늘 퀴즈 시작'}
-          </Text>
+          <LinearGradient
+            colors={['#7C5CFC', '#5B8DEF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.startButton}
+          >
+            <Text style={styles.startButtonText}>
+              {todayDone ? '🔄  다시 풀기' : '📈  오늘 퀴즈 시작'}
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* 시장 지수 */}
@@ -271,7 +284,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F8FF',
+    backgroundColor: '#FAFAFF',
     paddingHorizontal: 20,
   },
   header: {
@@ -282,8 +295,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   greeting: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '800',
     color: '#1A1A2E',
     marginBottom: 4,
   },
@@ -292,21 +305,19 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   streakBadge: {
-    backgroundColor: '#FFF7ED',
-    borderRadius: 20,
+    backgroundColor: '#FFEDD5',
+    borderRadius: 22,
     paddingHorizontal: 14,
     paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    borderWidth: 1,
-    borderColor: '#FED7AA',
   },
   streakEmoji: { fontSize: 16 },
   streakCount: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#EA580C',
+    fontWeight: '800',
+    color: '#F97316',
   },
   badgeRow: {
     flexDirection: 'row',
@@ -314,35 +325,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   levelBadge: {
-    backgroundColor: '#EFF6FF',
-    borderRadius: 20,
+    backgroundColor: '#EDE9FE',
+    borderRadius: 22,
     paddingHorizontal: 12,
     paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
   },
   levelEmoji: { fontSize: 16 },
   levelText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#3B82F6',
+    fontWeight: '800',
+    color: '#7C5CFC',
   },
   mainCard: {
-    backgroundColor: '#1A1A2E',
-    borderRadius: 24,
+    borderRadius: 28,
     padding: 24,
     marginBottom: 20,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
   },
   mainCardTop: {
     marginBottom: 16,
   },
   cardLabel: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#3B82F6',
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.85)',
     letterSpacing: 2,
     marginBottom: 6,
   },
@@ -353,7 +366,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#2D2D44',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     marginBottom: 16,
   },
   xpSection: {
@@ -367,28 +380,28 @@ const styles = StyleSheet.create({
   },
   xpLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#D1D5DB',
+    fontWeight: '700',
+    color: '#fff',
   },
   xpValue: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: 'rgba(255,255,255,0.8)',
   },
   xpBarBg: {
-    height: 6,
-    backgroundColor: '#2D2D44',
-    borderRadius: 3,
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 6,
   },
   xpBarFill: {
-    height: 6,
-    backgroundColor: '#3B82F6',
-    borderRadius: 3,
+    height: 8,
+    backgroundColor: '#FFE066',
+    borderRadius: 4,
   },
   xpNextLabel: {
     fontSize: 11,
-    color: '#6B7280',
+    color: 'rgba(255,255,255,0.75)',
     textAlign: 'right',
   },
   doneSection: {
@@ -401,8 +414,8 @@ const styles = StyleSheet.create({
   },
   doneTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#10B981',
+    fontWeight: '800',
+    color: '#FFE066',
     marginBottom: 8,
   },
   scoreRow: {
@@ -416,7 +429,7 @@ const styles = StyleSheet.create({
   },
   scoreSlash: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: 'rgba(255,255,255,0.8)',
   },
   quizInfoSection: {
     paddingVertical: 4,
@@ -427,15 +440,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   infoBadge: {
-    backgroundColor: '#2D2D44',
+    backgroundColor: 'rgba(255,255,255,0.22)',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   infoBadgeText: {
-    color: '#D1D5DB',
+    color: '#fff',
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   categorySection: {
     marginBottom: 20,
@@ -451,42 +464,42 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   categoryChip: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#EDE9FE',
     borderRadius: 20,
     paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
+    paddingVertical: 7,
   },
   categoryChipText: {
-    color: '#3B82F6',
+    color: '#7C5CFC',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  startButtonWrap: {
+    borderRadius: 22,
+    marginBottom: 28,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 10,
   },
   startButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 18,
+    borderRadius: 22,
     paddingVertical: 20,
     alignItems: 'center',
-    marginBottom: 28,
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 8,
   },
   startButtonText: {
     color: '#fff',
     fontSize: 17,
-    fontWeight: 'bold',
+    fontWeight: '800',
     letterSpacing: 0.5,
   },
   marketSection: {
     marginBottom: 20,
   },
   marketTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: '#1A1A2E',
     marginBottom: 12,
   },
@@ -498,11 +511,14 @@ const styles = StyleSheet.create({
   },
   marketCategory: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    marginBottom: 8,
+    borderRadius: 18,
+    marginBottom: 10,
     overflow: 'hidden',
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
   },
   marketCategoryLabel: {
     fontSize: 11,
@@ -556,8 +572,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   newsTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: '#1A1A2E',
     marginBottom: 12,
   },
@@ -569,10 +585,13 @@ const styles = StyleSheet.create({
   },
   newsItem: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
   },
   newsItemInner: {
     padding: 14,
