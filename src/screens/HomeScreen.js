@@ -16,6 +16,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { isTodayDone, getStreak, getLastScore, getXP } from '../utils/storage';
 import { fetchStockNews } from '../utils/news';
 import { fetchMarketData } from '../utils/market';
+import { getTodayQuestions } from '../utils/quizHelper';
 import { getLevelInfo, LEVELS } from '../utils/xp';
 import Sparkline from '../components/Sparkline';
 import Touchable from '../components/Touchable';
@@ -36,6 +37,9 @@ export default function HomeScreen({ navigation }) {
     day: 'numeric',
     weekday: 'long',
   });
+
+  // 오늘 출제되는 문제들의 카테고리 (중복 제거)
+  const todayCategories = [...new Set(getTodayQuestions().map((q) => q.category))];
 
   useFocusEffect(
     useCallback(() => {
@@ -176,11 +180,16 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.categorySection}>
           <Text style={styles.categoryTitle}>오늘의 출제 범위</Text>
           <View style={styles.categoryRow}>
-            {['기초 개념', '주요 지표', '투자 용어'].map((c) => (
+            {todayCategories.slice(0, 4).map((c) => (
               <View key={c} style={styles.categoryChip}>
                 <Text style={styles.categoryChipText}>{c}</Text>
               </View>
             ))}
+            {todayCategories.length > 4 && (
+              <View style={styles.categoryChip}>
+                <Text style={styles.categoryChipText}>+{todayCategories.length - 4}</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -526,6 +535,7 @@ const styles = StyleSheet.create({
   },
   categoryRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   categoryChip: {

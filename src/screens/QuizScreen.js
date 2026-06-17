@@ -13,6 +13,14 @@ import Touchable from '../components/Touchable';
 
 const questions = getTodayQuestions();
 
+const DIFFICULTY_COLORS = {
+  초급: { bg: '#DCFCE7', text: '#16A34A' },
+  중급: { bg: '#FEF3C7', text: '#D97706' },
+  고급: { bg: '#FEE2E2', text: '#DC2626' },
+};
+const difficultyTagStyle = (d) => ({ backgroundColor: (DIFFICULTY_COLORS[d] || {}).bg || '#F3F4F6' });
+const difficultyTextStyle = (d) => ({ color: (DIFFICULTY_COLORS[d] || {}).text || '#6B7280' });
+
 export default function QuizScreen({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -89,6 +97,13 @@ export default function QuizScreen({ navigation }) {
           <View style={styles.tag}>
             <Text style={styles.tagText}>{question.category}</Text>
           </View>
+          {question.difficulty && (
+            <View style={[styles.tag, difficultyTagStyle(question.difficulty)]}>
+              <Text style={[styles.tagText, difficultyTextStyle(question.difficulty)]}>
+                {question.difficulty}
+              </Text>
+            </View>
+          )}
           <View style={[styles.tag, styles.tagType]}>
             <Text style={styles.tagText}>{question.type === 'ox' ? 'OX 퀴즈' : '객관식'}</Text>
           </View>
