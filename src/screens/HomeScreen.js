@@ -203,47 +203,52 @@ export default function HomeScreen({ navigation }) {
           ) : market.length === 0 ? (
             <Text style={styles.marketEmpty}>시장 데이터를 불러올 수 없어요.</Text>
           ) : (
-            ['국내', '미국', '환율'].map((category) => {
-              const items = market.filter((i) => i.category === category);
-              if (!items.length) return null;
-              return (
-                <View key={category} style={styles.marketCategory}>
-                  <Text style={styles.marketCategoryLabel}>{category}</Text>
-                  {items.map((item) => {
-                    const up = item.changePercent != null && item.changePercent >= 0;
-                    const color = item.changePercent == null ? '#6B7280' : up ? '#EF4444' : '#3B82F6';
-                    return (
-                      <View key={item.symbol} style={styles.marketItem}>
-                        <View style={styles.marketNameCol}>
-                          <Text style={styles.marketName}>{item.name}</Text>
-                          {item.changePercent != null && (
-                            <Text style={[styles.marketTrend, { color }]}>
-                              {up ? '▲' : '▼'} {Math.abs(item.changePercent).toFixed(2)}%
+            <View style={styles.marketCard}>
+              {['국내', '미국', '환율'].map((category, ci) => {
+                const items = market.filter((i) => i.category === category);
+                if (!items.length) return null;
+                return (
+                  <View key={category}>
+                    <View style={[styles.marketGroupHeader, ci === 0 && { marginTop: 0 }]}>
+                      <Text style={styles.marketGroupLabel}>{category}</Text>
+                    </View>
+                    {items.map((item, ii) => {
+                      const up = item.changePercent != null && item.changePercent >= 0;
+                      const color = item.changePercent == null ? '#6B7280' : up ? '#EF4444' : '#3B82F6';
+                      return (
+                        <View
+                          key={item.symbol}
+                          style={[styles.marketItem, ii === items.length - 1 && styles.marketItemLast]}
+                        >
+                          <View style={styles.marketNameCol}>
+                            <Text style={styles.marketName}>{item.name}</Text>
+                            {item.changePercent != null && (
+                              <Text style={[styles.marketTrend, { color }]}>
+                                {up ? '▲' : '▼'} {Math.abs(item.changePercent).toFixed(2)}%
+                              </Text>
+                            )}
+                          </View>
+
+                          <View style={styles.marketSparkCol}>
+                            {item.spark && item.spark.length >= 2 && (
+                              <Sparkline data={item.spark} color={color} />
+                            )}
+                          </View>
+
+                          <View style={styles.marketRight}>
+                            <Text style={[styles.marketPrice, { color }]}>
+                              {item.price == null
+                                ? '-'
+                                : item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}
                             </Text>
-                          )}
+                          </View>
                         </View>
-
-                        <View style={styles.marketSparkCol}>
-                          {item.spark && item.spark.length >= 2 && (
-                            <Sparkline data={item.spark} color={color} />
-                          )}
-                        </View>
-
-                        <View style={styles.marketRight}>
-                          <Text style={[styles.marketPrice, { color }]}>
-                            {item.price == null
-                              ? '-'
-                              : item.category === '환율'
-                              ? item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })
-                              : item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}
-                          </Text>
-                        </View>
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            })
+                      );
+                    })}
+                  </View>
+                );
+              })}
+            </View>
           )}
         </View>
 
@@ -509,35 +514,37 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
   },
-  marketCategory: {
+  marketCard: {
     backgroundColor: '#fff',
-    borderRadius: 18,
-    marginBottom: 10,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingBottom: 4,
     overflow: 'hidden',
     shadowColor: '#7C5CFC',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3,
   },
-  marketCategoryLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#6B7280',
-    letterSpacing: 1,
-    backgroundColor: '#F9FAFB',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+  marketGroupHeader: {
+    marginTop: 14,
+    marginBottom: 2,
+  },
+  marketGroupLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#A78BFA',
+    letterSpacing: 0.5,
   },
   marketItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
+  },
+  marketItemLast: {
+    borderBottomWidth: 0,
   },
   marketNameCol: {
     flex: 1,
